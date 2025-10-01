@@ -24,20 +24,21 @@ class AdditionalInfo(BaseModel):
     gender: str
     phone: str
     role: str
+    email: str
 
     class Config:
         from_attribute = True  # ORM → Pydantic 변환 허용
 @router.get("/additional-info")
-async def additional_info_form(user_id: int):
+async def additional_info_form(email: str):
     # React 추가정보 입력 페이지로 바로 리다이렉트
-    return RedirectResponse(url=f"http://localhost:5173/additional-info?user_id={user_id}")
+    return RedirectResponse(url=f"http://localhost:5173/additional-info?email={email}")
 
-@router.patch("/additional-info/{user_id}")
+@router.patch("/additional-info/{email}")
 async def additional_info(
-        user_id: int,
+        email: str,
         data: AdditionalInfo=Body(...),
         db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         return {"error": "User not found"}
 
@@ -49,4 +50,4 @@ async def additional_info(
     db.commit()
     db.refresh(user)
 
-    return {"message": "User info updated", "user_id": user.id}
+    return {"message": "User info updated", "email": user.email}

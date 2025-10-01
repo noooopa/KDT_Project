@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuth
 import os
+from app.login.google import create_token
 from app.models import User
 from data.postgresDB import SessionLocal
 from dotenv import load_dotenv
@@ -53,13 +54,28 @@ async def naver_callback(request: Request, db: Session = Depends(get_db)):
     if not email:
         return {"error": "Naver did not return email. Check consent settings."}
 
+    # ✅ DB 조회
     user = db.query(User).filter(User.email == email).first()
     if not user:
+        # 신규 회원 → 추가정보 입력 페이지
         user = User(email=email, name=user_info.get("name"), oauth="naver")
         db.add(user)
         db.commit()
         db.refresh(user)
-        return RedirectResponse(f"http://localhost:5173/additional-info?userId={user.id}")
+        return RedirectResponse(f"http://localhost:5173/additional-info?email={user.email}")
 
-    return RedirectResponse("http://localhost:5173/profile")
+    # ✅ JWT 발급
+    access_token = create_token(user.id)
+
+    # ✅ httpOnly 쿠키에 JWT 심기
+    response = RedirectResponse("http://localhost:5173/")
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,   # 자바스크립트 접근 불가
+        secure=False,    # 개발환경: False, 배포환경: True
+        samesite="lax",
+        max_age=3600,
+    )
+    return response
 

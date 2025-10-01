@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(20) unique, -- String 형식이 안전, 010-1234-5678 형식으로 들어가서
     OAuth VARCHAR(20) CHECK (OAuth IN ('google','naver','kakao')),
     role VARCHAR(20) CHECK (role IN ('customer','admin')),
-    email VARCHAR(255) UNIQUE,
+    email VARCHAR(255) UNIQUE not null,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     key_parent VARCHAR(100) default null  --부모인증키
@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS reading_forum_posts (
 CREATE TABLE IF NOT EXISTS parent_forum_posts (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
+    parent_id int references parent_forum_posts(id) on delete cascade default null,
+    title VARCHAR(255),   -- 댓글일시 제목이 없음
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),

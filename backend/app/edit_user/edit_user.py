@@ -24,8 +24,8 @@ class UserRead(BaseModel):
     nickname: Optional[str]
     age: Optional[int]
     gender: Optional[str]
-    phone: Optional[str]
-    oauth: str
+    phone: Optional[str] = None
+    oauth: Optional[str] = None
     role: str
     email: str
     key_parent: Optional[str]
@@ -52,7 +52,7 @@ def info(   email: str,
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return {"error": "User not found"}
-    return RedirectResponse(f"http://localhost:5173/info?email={email}")
+    return user
 
 @router.patch("/info/{email}", response_model=UserRead)
 def patch_info(

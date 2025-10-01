@@ -43,8 +43,8 @@ async def customer_support():
 # 자주하는 질문 리스트로 넘어가도록
 @router.get("/list")
 async def customer_support_list(db: Session = Depends(get_db)):
-    customer_support_list = db.query(CustomerSupport).filter(CustomerSupport.parent_id == None).all()
-    return customer_support_list
+    customer_support_lists = db.query(CustomerSupport).filter(CustomerSupport.parent_id == None).all()
+    return customer_support_lists
 
 @router.get("/list/{list_id}")
 async def customer_support_by_id(list_id: int, db: Session = Depends(get_db)):
