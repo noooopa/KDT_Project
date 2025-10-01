@@ -1,0 +1,16 @@
+fastapi==0.112.0
+uvicorn[standard]==0.30.0
+python-dotenv==1.0.1
+pydantic~=2.11.7
+starlette~=0.37.2
+pandas~=2.3.2
+SQLAlchemy~=2.0.43
+gunicorn==20.1.0
+psycopg2-binary==2.9.10
+
+# 보안 / 인증 관련
+authlib==1.6.4
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+cryptography>=40.0.0,<50.0.0
