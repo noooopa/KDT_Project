@@ -1,4 +1,4 @@
-from app.models import User
+from app.models import Users as User
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from fastapi import Cookie, Depends, HTTPException, APIRouter
@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 import os
 from jose import jwt, JWTError
 
-from app.login.google import create_token
 from data.postgresDB import SessionLocal
 
 load_dotenv()  # .env 파일 자동 로드
@@ -55,7 +54,6 @@ def get_current_user(access_token: str = Cookie(None), db: Session = Depends(get
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    from app.models import User
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -67,7 +65,7 @@ def profile_data(user=Depends(get_current_user)):
 # 로그인 상태 유지
 @router.post("/login")
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-    from app.models import User
+
     user = db.query(User).filter(User.email == data.email).first()
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")

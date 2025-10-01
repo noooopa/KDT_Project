@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuth
 import os
 from app.login.google import create_token
-from app.models import User
+from app.models import Users as User
 from data.postgresDB import SessionLocal
 from dotenv import load_dotenv
 load_dotenv()  # .env 파일 자동 로드

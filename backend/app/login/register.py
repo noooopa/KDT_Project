@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.models import User
+from app.models import Users as User
 from data.postgresDB import SessionLocal
 from app.edit_user.edit_user import UserRead
 

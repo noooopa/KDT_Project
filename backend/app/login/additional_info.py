@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Body
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from data.postgresDB import SessionLocal
-from app.models import User
+from app.models import Users as User
 from pydantic import BaseModel
 from dotenv import load_dotenv
 load_dotenv()  # .env 파일 자동 로드

@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS reading_logs (
     book_title VARCHAR(255) NOT NULL,
     author VARCHAR(255),
     publisher VARCHAR(255),
-    content VARCHAR(200), -- 독서록 내용, 200자
+    content TEXT, -- 독서록 내용
     unknown_sentence TEXT -- 모르는 문장 인용
     );
 
@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS daily_writings (
 CREATE TABLE IF NOT EXISTS reading_forum_posts (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
+    parent_id int references reading_forum_posts(id) on delete cascade default null,
+    title VARCHAR(255),
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
@@ -97,14 +98,21 @@ CREATE TABLE IF NOT EXISTS user_games (
 -- 구독권 (JOIN 가능: users)
 CREATE TABLE IF NOT EXISTS subscriptions (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE, -- 사용자와 연결
-    plan_name VARCHAR(50) NOT NULL,                    -- 플랜 이름 (예: Basic, Premium)
-    status VARCHAR(20) CHECK (status IN ('active','expired','canceled')) DEFAULT 'active',
-    start_date TIMESTAMP NOT NULL,                     -- 구독 시작일
-    end_date TIMESTAMP NOT NULL,                       -- 구독 종료일
-    created_at TIMESTAMP DEFAULT NOW(),               -- 레코드 생성 시각
-    updated_at TIMESTAMP DEFAULT NOW()                -- 레코드 수정 시각
-    );
+    user_id INT NOT NULL,
+    plan_name VARCHAR(100) NOT NULL,
+    amount INT NOT NULL,
+    payment_key VARCHAR(200),   -- PG사 결제 고유키
+    order_id VARCHAR(200),      -- 주문번호
+    method VARCHAR(50),         -- toss, naverpay, card 등
+    status VARCHAR(20) CHECK (
+        status IN ('pending','paid','canceled','expired')
+    ) DEFAULT 'pending',         -- 결제 상태 : 기본 pending
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP,
+    paid_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
 
 -- 고객센터 게시판 (질문+답변 쓰레드 구조) (JOIN 가능: users, 자기참조 가능: parent_id)
 CREATE TABLE IF NOT EXISTS customer_support (

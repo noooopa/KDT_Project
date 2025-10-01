@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
-from app.models import User
+from app.models import Users as User
 from data.postgresDB import SessionLocal
 from typing import Optional
 from pydantic import BaseModel

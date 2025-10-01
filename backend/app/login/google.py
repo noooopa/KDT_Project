@@ -1,11 +1,11 @@
 # google.py
 import httpx
-from fastapi import APIRouter, Request, Depends, Cookie, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from authlib.integrations.starlette_client import OAuth
 import os,datetime
-from app.models import User
+from app.models import Users as User
 from data.postgresDB import SessionLocal
 from jose import jwt
 from dotenv import load_dotenv

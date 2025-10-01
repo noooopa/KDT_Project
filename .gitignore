@@ -25,3 +25,4 @@ dist-ssr
 # 백엔드 환경변수(.env),가상환경(.venv)은 gitignore
 backend/.venv
 backend/.env
+*.pem
