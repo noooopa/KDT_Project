@@ -76,7 +76,7 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
     if not verify_password(data.password, user.password):
         raise HTTPException(status_code=401, detail="이메일이나 비밀번호가 틀렸습니다.")
 
-    # JWT 발급
+    # JWT 발급 - 10/01 추가 refresh_token 추가
     access_token = create_access_token(user.id, expires_delta=15)   # 15분짜리
     refresh_token = create_refresh_token(user.id, expires_days=7)  # 7일짜리
     response = JSONResponse({"msg": "Login successful"})
@@ -84,9 +84,17 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=False,   # 개발용
-        samesite="lax",
+        secure=True,   # 개발용 HTTPS
+        samesite="none",    # 크로스 도메인 허용
         max_age=3600,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,   # 개발용 HTTPS
+        samesite="none",    # 크로스 도메인 허용
+        max_age=3600*24*7,
     )
     return response
 
@@ -113,6 +121,7 @@ def refresh_token(refresh_token: str = Cookie(None), db: Session = Depends(get_d
     response = JSONResponse({"msg": "Token refreshed"})
     response.set_cookie("access_token", new_access_token, httponly=True, max_age=900)
     return response
+
 @router.get("/logout")
 def logout():
     response = RedirectResponse("http://localhost:5173/")

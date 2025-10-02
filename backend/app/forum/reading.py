@@ -32,7 +32,7 @@ class UserNickname(BaseModel):
 class ReadingForumPostCreate(BaseModel):
     user_id: int
     parent_id: Optional[int] = None  # 부모글 ID
-    title: str
+    title: Optional[str] = None
     content: str
     book_title: Optional[str] = None       # ✅ ORM의 book_title 반영
     discussion_tags: Optional[str] = None  # ✅ ORM의 discussion_tags 반영
@@ -49,8 +49,8 @@ class ReadingForumPostUpdate(BaseModel):
 # ✅ 글 조회 응답용 (User 정보 + children 포함)
 class ReadingForumPostRead(BaseModel):
     id: int
-    parent_id: Optional[int]
-    title: str
+    parent_id: Optional[int] = None
+    title: Optional[str]
     content: str
     book_title: Optional[str]
     discussion_tags: Optional[str]
@@ -115,24 +115,24 @@ def get_posts(
         )
     return response
 
-@router.get("/post/{list_id}",response_model=ParentForumPostRead)
-def get_post(post_id: int, db: Session = Depends(get_db)):
-    post = db.query(ParentForumPost).filter(ParentForumPost.id == post_id).first()
+@router.get("/post/{list_id}",response_model=ReadingForumPostRead)
+def get_post(list_id: int, db: Session = Depends(get_db)):
+    post = db.query(ReadingForumPosts).filter(ReadingForumPosts.id == list_id).first()
     if not post:
         raise HTTPException(status_code=404, detail={"성공여부":False,"이유":"존재하지 않는 게시물입니다."})
     return post
 
-@router.post("/post/create", response_model=ParentForumPostCreate)
+@router.post("/post/create", response_model=ReadingForumPostCreate)
 def create_post(
-    request: ParentForumPostCreate,
+    request: ReadingForumPostCreate,
     db: Session = Depends(get_db)
 ):
-    new_post = ParentForumPost(
+    new_post = ReadingForumPosts(
         user_id=request.user_id,
         title=request.title,
         content=request.content,
-        category=request.category,
-        is_important=request.is_important,
+        book_title=request.book_title,
+        discussion_tags=request.discussion_tags,
         parent_id=request.parent_id
     )
     db.add(new_post)
@@ -140,29 +140,30 @@ def create_post(
     db.refresh(new_post)
     return new_post
 
-@router.patch("/post/{list_id}/update",response_model=ParentForumPostUpdate)
+@router.patch("/post/{list_id}/update",response_model=ReadingForumPostUpdate)
 def update_post(
-    request: ParentForumPostUpdate,
+    request: ReadingForumPostUpdate,
     list_id: int,
     db: Session = Depends(get_db)
 ):
-    post = db.query(ParentForumPost).filter(ParentForumPost.id == list_id).first()
+    post = db.query(ReadingForumPosts).filter(ReadingForumPosts.id == list_id).first()
     if not post:
         raise HTTPException(status_code=404, detail={"성공여부":False,"이유":"존재하지 않는 게시물입니다."})
     if request.title:
-        post.title = request.title
+        post.book_title = request.book_title
         post.updated_at = datetime.now()
         post.content = request.content
         db.commit()
         db.refresh(post)
         return post
     return {"로그":"수정될 것이 없거나 실패했습니다."}
+
 @router.delete("/post/{list_id}/delete")
 def delete_post(
     list_id: int,
     db: Session = Depends(get_db)
 ):
-    post = db.query(ParentForumPost).filter(ParentForumPost.id == list_id).first()
+    post = db.query(ReadingForumPosts).filter(ReadingForumPosts.id == list_id).first()
     if not post:
         raise HTTPException(status_code=404, detail={"성공여부":False,"이유":"존재하지 않는 게시물입니다."})
     db.delete(post)

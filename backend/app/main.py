@@ -5,6 +5,7 @@ from starlette.responses import JSONResponse
 from fastapi.requests import Request
 from app.customer_center.customer_support import router as customer_support
 from app.edit_user.edit_user import router as edit_user
+from app.forum.reading import router as reading
 from app.forum.parent import router as parent
 from app.login.register import router as register
 from app.login.naver_router import router as naver_router
@@ -51,8 +52,9 @@ app.include_router(edit_user, prefix="/user", tags=["user"])
 app.include_router(login, prefix="/login_user", tags=["login"])
 # 회원가입
 app.include_router(register, prefix="/register", tags=["register"])
-#커뮤니티
+#커뮤니티-부모
 app.include_router(parent,prefix="/community/parent",tags=["community_parent"])
+app.include_router(reading,prefix="/community/reading",tags=["community_reading"])
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

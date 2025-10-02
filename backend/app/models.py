@@ -158,19 +158,32 @@ class ReadingForumPosts(Base):
     __tablename__ = 'reading_forum_posts'
     __table_args__ = (
         ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE', name='reading_forum_posts_user_id_fkey'),
-        PrimaryKeyConstraint('id', name='reading_forum_posts_pkey')
+        ForeignKeyConstraint(['parent_id'], ['reading_forum_posts.id'], ondelete='CASCADE', name='reading_forum_posts_parent_id_fkey'),
+        PrimaryKeyConstraint('id', name='reading_forum_posts_pkey'),
     )
 
     id = mapped_column(Integer)
-    title = mapped_column(String(255), nullable=False)
+    user_id = mapped_column(Integer, nullable=False)
+    parent_id = mapped_column(Integer, nullable=True, server_default=text("NULL"))
+    title = mapped_column(String(255), nullable=True)   # SQL에서 NOT NULL 제약이 없음
     content = mapped_column(Text, nullable=False)
-    user_id = mapped_column(Integer)
-    created_at = mapped_column(DateTime, server_default=text('now()'))
-    updated_at = mapped_column(DateTime, server_default=text('now()'))
-    book_title = mapped_column(String(255))
-    discussion_tags = mapped_column(String(100))
+    created_at = mapped_column(DateTime, server_default=text('NOW()'))
+    updated_at = mapped_column(DateTime, server_default=text('NOW()'))
+    book_title = mapped_column(String(255), nullable=True)
+    discussion_tags = mapped_column(String(100), nullable=True)
 
+    # 관계 설정
     user: Mapped[Optional['Users']] = relationship('Users', back_populates='reading_forum_posts')
+    parent: Mapped[Optional['ReadingForumPosts']] = relationship(
+        'ReadingForumPosts',
+        remote_side=[id],
+        back_populates="children"
+    )
+    children: Mapped[list['ReadingForumPosts']] = relationship(
+        'ReadingForumPosts',
+        back_populates="parent",
+        cascade="all, delete-orphan"
+    )
 
 
 class ReadingLogs(Base):
