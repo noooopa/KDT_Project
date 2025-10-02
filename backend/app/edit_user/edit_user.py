@@ -19,7 +19,6 @@ def get_db():
         db.close()
 class UserRead(BaseModel):
     id: int
-    login_id: Optional[str]
     name: Optional[str]
     nickname: Optional[str]
     age: Optional[int]
@@ -34,7 +33,6 @@ class UserRead(BaseModel):
         from_attributes = True
 
 class UserUpdate(BaseModel):
-    login_id: Optional[str] = None
     password: Optional[str] = None
     nickname: Optional[str] = None
     age: Optional[int] = None

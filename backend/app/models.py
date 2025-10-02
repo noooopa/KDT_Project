@@ -18,7 +18,6 @@ class Users(Base):
     )
 
     id = mapped_column(Integer, Identity(always=True, start=1, increment=1, minvalue=1, maxvalue=2147483647, cycle=False, cache=1))
-    login_id = mapped_column(String(30))
     password = mapped_column(String(255))
     name = mapped_column(String(20))
     nickname = mapped_column(String(20))

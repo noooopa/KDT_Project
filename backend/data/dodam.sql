@@ -1,7 +1,6 @@
 -- users
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, --다른 DB와의 호환성 고려
-    login_id VARCHAR(30),
     password VARCHAR(255),
     name VARCHAR(20),
     nickname VARCHAR(20),
@@ -9,11 +8,12 @@ CREATE TABLE IF NOT EXISTS users (
     gender VARCHAR(10),
     phone VARCHAR(20) unique, -- String 형식이 안전, 010-1234-5678 형식으로 들어가서
     OAuth VARCHAR(20) CHECK (OAuth IN ('google','naver','kakao')),
-    role VARCHAR(20) CHECK (role IN ('customer','admin')),
+    role VARCHAR(20) CHECK (role IN ('customer','admin')) default 'customer',
     email VARCHAR(255) UNIQUE not null,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     key_parent VARCHAR(100) default null  --부모인증키
+    --is_active BOOLEAN DEFAULT TRUE --옅은 삭제에 대해 말씀하심,
 );
 
 --diary (JOIN 가능: users)
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS reading_forum_posts (
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    book_title VARCHAR(255), -- 관련 도서
+    book_title VARCHAR(255),     -- 관련 도서
     discussion_tags VARCHAR(100) -- 토론 주제 태그
 );
 

@@ -65,7 +65,6 @@ def profile_data(user=Depends(get_current_user)):
 # 로그인 상태 유지
 @router.post("/login")
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-
     user = db.query(User).filter(User.email == data.email).first()
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")

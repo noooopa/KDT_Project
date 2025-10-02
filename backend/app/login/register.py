@@ -23,7 +23,6 @@ SECRET_KEY=os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
 
 class UserRegister(BaseModel):
-    login_id: Optional[str] = None
     password: Optional[str] = None
     nickname: Optional[str] = None
     age: Optional[int] = None

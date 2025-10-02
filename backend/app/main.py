@@ -4,6 +4,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import JSONResponse
 from fastapi.requests import Request
 from app.customer_center.customer_support import router as customer_support
+from app.edit_user.find_user import router as find_user
+from app.edit_user.check_duplicate import router as check_duplicate
 from app.edit_user.edit_user import router as edit_user
 from app.forum.reading import router as reading
 from app.forum.parent import router as parent
@@ -55,7 +57,8 @@ app.include_router(register, prefix="/register", tags=["register"])
 #커뮤니티-부모
 app.include_router(parent,prefix="/community/parent",tags=["community_parent"])
 app.include_router(reading,prefix="/community/reading",tags=["community_reading"])
-
+app.include_router(check_duplicate,prefix="/check",tags=["check_duplicate"])
+app.include_router(find_user,prefix="/users",tags=["find_user"])
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
@@ -65,7 +68,6 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 if __name__ == "__main__":
     use_https = os.getenv("USE_HTTPS", "false").lower() == "true"
-
     if use_https:
         uvicorn.run(
             "app.main:app",
